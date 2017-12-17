@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -909,7 +910,9 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
 				HttpHeaders httpHeaders = httpRequest.getHeaders();
 				HttpHeaders requestHeaders = this.requestEntity.getHeaders();
 				if (!requestHeaders.isEmpty()) {
-					httpHeaders.putAll(requestHeaders);
+					for (Map.Entry<String, List<String>> entry : requestHeaders.entrySet()) {
+						httpHeaders.put(entry.getKey(), new LinkedList<>(entry.getValue()));
+					}
 				}
 				if (httpHeaders.getContentLength() < 0) {
 					httpHeaders.setContentLength(0L);
@@ -919,6 +922,7 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
 				Class<?> requestBodyClass = requestBody.getClass();
 				Type requestBodyType = (this.requestEntity instanceof RequestEntity ?
 						((RequestEntity<?>)this.requestEntity).getType() : requestBodyClass);
+				HttpHeaders httpHeaders = httpRequest.getHeaders();
 				HttpHeaders requestHeaders = this.requestEntity.getHeaders();
 				MediaType requestContentType = requestHeaders.getContentType();
 				for (HttpMessageConverter<?> messageConverter : getMessageConverters()) {
@@ -927,7 +931,9 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
 								(GenericHttpMessageConverter<Object>) messageConverter;
 						if (genericConverter.canWrite(requestBodyType, requestBodyClass, requestContentType)) {
 							if (!requestHeaders.isEmpty()) {
-								httpRequest.getHeaders().putAll(requestHeaders);
+								for (Map.Entry<String, List<String>> entry : requestHeaders.entrySet()) {
+									httpHeaders.put(entry.getKey(), new LinkedList<>(entry.getValue()));
+								}
 							}
 							if (logger.isDebugEnabled()) {
 								if (requestContentType != null) {
@@ -945,7 +951,9 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
 					}
 					else if (messageConverter.canWrite(requestBodyClass, requestContentType)) {
 						if (!requestHeaders.isEmpty()) {
-							httpRequest.getHeaders().putAll(requestHeaders);
+							for (Map.Entry<String, List<String>> entry : requestHeaders.entrySet()) {
+								httpHeaders.put(entry.getKey(), new LinkedList<>(entry.getValue()));
+							}
 						}
 						if (logger.isDebugEnabled()) {
 							if (requestContentType != null) {

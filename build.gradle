@@ -45,21 +45,21 @@ configure(allprojects) { project ->
 	ext.freemarkerVersion    = "2.3.27-incubating"
 	ext.groovyVersion        = "2.4.13"
 	ext.hsqldbVersion        = "2.4.0"
-	ext.jackson2Version      = "2.9.2"
-	ext.jettyVersion         = "9.4.7.v20170914"
+	ext.jackson2Version      = "2.9.3"
+	ext.jettyVersion         = "9.4.8.v20171121"
 	ext.junitJupiterVersion  = "5.0.2"
 	ext.junitPlatformVersion = "1.0.2"
 	ext.junitVintageVersion  = "4.12.2"
 	ext.kotlinVersion        = "1.2.0"
 	ext.log4jVersion         = "2.10.0"
-	ext.nettyVersion         = "4.1.17.Final"
+	ext.nettyVersion         = "4.1.18.Final"
 	ext.reactorVersion       = "Bismuth-SR4"
 	ext.rxjavaVersion        = "1.3.4"
 	ext.rxjavaAdapterVersion = "1.2.1"
 	ext.rxjava2Version       = "2.1.7"
 	ext.slf4jVersion         = "1.7.25"
 	ext.tiles3Version        = "3.0.8"
-	ext.tomcatVersion        = "8.5.23"
+	ext.tomcatVersion        = "8.5.24"
 	ext.undertowVersion      = "1.4.21.Final"
 
 	ext.gradleScriptDir = "${rootProject.projectDir}/gradle"
@@ -73,7 +73,7 @@ configure(allprojects) { project ->
 	compileKotlin {
 		kotlinOptions {
 			jvmTarget = "1.8"
-			freeCompilerArgs = ["-Xskip-runtime-version-check", "-Xjsr305=strict"]
+			freeCompilerArgs = ["-Xjsr305=strict"]
 			apiVersion = "1.1"
 			languageVersion = "1.1"
 		}
@@ -82,7 +82,7 @@ configure(allprojects) { project ->
 	compileTestKotlin {
 		kotlinOptions {
 			jvmTarget = "1.8"
-			freeCompilerArgs = ["-Xskip-runtime-version-check", "-Xjsr305=strict"]
+			freeCompilerArgs = ["-Xjsr305=strict"]
 		}
 	}
 
@@ -274,7 +274,7 @@ configure(rootProject) {
 
 	task wrapper(type: Wrapper) {
 		description = "Generates gradlew[.bat] scripts"
-		gradleVersion = '4.3.1'
+		gradleVersion = '4.4'
 
 		doLast() {
 			def gradleOpts = "-XX:MaxMetaspaceSize=1024m -Xmx1024m"
