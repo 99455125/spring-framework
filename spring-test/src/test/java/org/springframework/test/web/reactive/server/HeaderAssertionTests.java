@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.http.client.reactive.MockClientHttpRequest;
 import org.springframework.mock.http.client.reactive.MockClientHttpResponse;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.*;
  * Unit tests for {@link HeaderAssertions}.
  *
  * @author Rossen Stoyanchev
+ * @author Sam Brannen
  * @since 5.0
  */
 public class HeaderAssertionTests {
@@ -121,6 +123,77 @@ public class HeaderAssertionTests {
 			assertNotNull(cause);
 			assertEquals("Response header 'Content-Type'=[application/json;charset=UTF-8] " +
 					"does not match [.*ISO-8859-1.*]", cause.getMessage());
+		}
+	}
+
+	@Test
+	public void valueMatcher() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("foo", "bar");
+		HeaderAssertions assertions = headerAssertions(headers);
+
+		assertions.value("foo", containsString("a"));
+	}
+
+	@Test
+	public void exists() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HeaderAssertions assertions = headerAssertions(headers);
+
+		// Success
+		assertions.exists("Content-Type");
+
+		try {
+			assertions.exists("Framework");
+			fail("Header should not exist");
+		}
+		catch (AssertionError error) {
+			Throwable cause = error.getCause();
+			assertNotNull(cause);
+			assertEquals("Response header 'Framework' does not exist", cause.getMessage());
+		}
+	}
+
+	@Test
+	public void doesNotExist() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		HeaderAssertions assertions = headerAssertions(headers);
+
+		// Success
+		assertions.doesNotExist("Framework");
+
+		try {
+			assertions.doesNotExist("Content-Type");
+			fail("Existing header expected");
+		}
+		catch (AssertionError error) {
+			Throwable cause = error.getCause();
+			assertNotNull(cause);
+			assertEquals("Response header 'Content-Type' exists with " +
+					"value=[application/json;charset=UTF-8]", cause.getMessage());
+		}
+	}
+
+	@Test
+	public void contentTypeCompatibleWith() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_XML);
+		HeaderAssertions assertions = headerAssertions(headers);
+
+		// Success
+		assertions.contentTypeCompatibleWith(MediaType.parseMediaType("application/*"));
+
+		try {
+			assertions.contentTypeCompatibleWith(MediaType.TEXT_XML);
+			fail("MediaTypes not compatible expected");
+		}
+		catch (AssertionError error) {
+			Throwable cause = error.getCause();
+			assertNotNull(cause);
+			assertEquals("Response header 'Content-Type'=[application/xml] " +
+					"is not compatible with [text/xml]", cause.getMessage());
 		}
 	}
 

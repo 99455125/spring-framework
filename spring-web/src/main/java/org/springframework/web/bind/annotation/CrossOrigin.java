@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,12 @@ import org.springframework.web.cors.CorsConfiguration;
  * from each type and method level pair of annotations are added to a
  * {@link CorsConfiguration} and then default values are applied via
  * {@link CorsConfiguration#applyPermitDefaultValues()}.
+ *
+ * <p>The rules for combining global and local configuration are generally
+ * additive -- e.g. all global and all local origins. For those attributes
+ * where only a single value can be accepted such as {@code allowCredentials}
+ * and {@code maxAge}, the local overrides the global value.
+ * See {@link CorsConfiguration#combine(CorsConfiguration)} for more details.
  *
  * @author Russell Allen
  * @author Sebastien Deleuze
@@ -75,6 +81,13 @@ public @interface CrossOrigin {
 	 * <p>A matched origin is listed in the {@code Access-Control-Allow-Origin}
 	 * response header of preflight actual CORS requests.
 	 * <p>By default all origins are allowed.
+	 * <p><strong>Note:</strong> CORS checks use values from "Forwarded"
+	 * (<a href="http://tools.ietf.org/html/rfc7239">RFC 7239</a>),
+	 * "X-Forwarded-Host", "X-Forwarded-Port", and "X-Forwarded-Proto" headers,
+	 * if present, in order to reflect the client-originated address.
+	 * Consider using the {@code ForwardedHeaderFilter} in order to choose from a
+	 * central place whether to extract and use, or to discard such headers.
+	 * See the Spring Framework reference for more on this filter.
 	 * @see #value
 	 */
 	@AliasFor("value")
